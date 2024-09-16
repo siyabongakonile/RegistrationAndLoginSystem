@@ -23,6 +23,7 @@ class Router{
 
     public function dispatch(string $url, string $method){
         $method = strtolower($method);
+        $url = $this->removeQueryStringOnURL($url);
         $isRouteFound = false;
         foreach($this->routes as $routeMethod => $route){
             if($routeMethod != $method)
@@ -48,5 +49,9 @@ class Router{
             throw new \Exception("Action '{$action}' for the controller '{$controller}' not found.");
         
         $controllerObj->$action();
+    }
+
+    protected function removeQueryStringOnURL(string $url): string{
+        return explode('?', $url)[0];
     }
 }
