@@ -13,7 +13,10 @@ class UserController extends BaseController{
         $session = Session::getInstance();
         if(!$session->isLoggedIn())
             header("Location: /login");
-        View::render('profile');
+        
+        $userId = Session::getInstance()->get('user-id');
+        $user = User::getUserById($userId);
+        View::render('profile', ['user' => $user]);
     }
 
     public function getEditUserProfile(){
