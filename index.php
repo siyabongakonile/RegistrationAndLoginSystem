@@ -20,5 +20,7 @@ $router->get('/login', AuthController::class, 'getLogin')
     ->get('/user/edit', UserController::class, 'getEditUserProfile')
     ->post('/user/edit', UserController::class, 'editUserProfile')
     ->get('/user/delete', UserController::class, 'deleteUser')
-    ->get('/verify', UserController::class, 'verifyEmail');
+    ->get('/verify', UserController::class, 'verifyEmail')
+    ->get('/', AuthController::class, 'getLogin')
+    ->get('/sendverification', UserController::class, 'sendVerificationEmail');
 $router->dispatch($url, $method);
