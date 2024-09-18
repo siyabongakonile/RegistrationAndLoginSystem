@@ -160,14 +160,26 @@ class User{
         $res = Database::getInstance()->fetchAll($sql, $params);
         if(!(count($res) > 0))
             return null;
-        $row = $res[0];
-        return new static(
-            $row['id'], 
-            $row['fname'], 
-            $row['lname'], 
-            $row['email'], 
-            $row['password'], 
-            (bool) $row['email_verified']
+        return User::convertDBToUserObj($res[0]);
+    }
+
+    public static function getUserById(int $userId): ?static{
+        $sql = "SELECT * FROM user WHERE id = ?";
+        $database = Database::getInstance();
+        $res = $database->fetchAll($sql, [$userId]);
+        if(count($res) < 0)
+            return null;
+        return User::convertDBToUserObj($res[0]);
+    }
+
+    protected static function convertDBToUserObj(array $dbUser): User{
+        return new User(
+            id: (int) $dbUser['id'],
+            firstname: $dbUser['fname'],
+            lastname: $dbUser['lname'],
+            email: $dbUser['email'],
+            password: $dbUser['password'],
+            isEmailVerified: (bool) $dbUser['email_verified']
         );
     }
 }
