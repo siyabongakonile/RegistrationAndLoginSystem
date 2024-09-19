@@ -36,4 +36,19 @@ class UserController extends BaseController{
         else
             View::render('auth/login', ['message' => 'Invalid Email\token for email verification.']);
     }
+
+    public function sendVerificationEmail(){
+        $session = Session::getInstance();
+        if(!$session->isLoggedIn())
+            View::render('auth/login');
+
+        $userId = $session->get('user-id');
+        $user = User::getUserById($userId);
+        if($user === null){
+            $session->logout();
+            View::render('auth/login');
+        }
+
+        $user->sendVerificationEmail(User::getVerificationToken($user));
+    }
 }
