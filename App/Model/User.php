@@ -182,4 +182,11 @@ class User{
             isEmailVerified: (bool) $dbUser['email_verified']
         );
     }
+
+    public static function getVerificationToken(User $user): string{
+        $database = Database::getInstance();
+        $sql = "SELECT email_verification_token FROM user WHERE id = ?";
+        $res = $database->fetchAll($sql, [$user->getId()]);
+        return $res[0]['email_verification_token'];
+    }
 }
