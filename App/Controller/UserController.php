@@ -32,9 +32,14 @@ class UserController extends BaseController{
         $token = Helpers::sanitizeString($_GET['token']) ?? '';
 
         if(User::verifyEmailUsingToken($email, $token))
-            View::render('auth/login', ['message' => 'Email verified successfully.']);
+            $message = 'Email verified successfully.';
         else
-            View::render('auth/login', ['message' => 'Invalid Email\token for email verification.']);
+            $message = 'Invalid Email\token for email verification.';
+
+        if(Session::getInstance()->isLoggedIn())
+            View::render('profile', ['message' => $message]);
+        else
+            View::render('auth/login', ['message' => $message]);
     }
 
     public function sendVerificationEmail(){
