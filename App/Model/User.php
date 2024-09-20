@@ -118,7 +118,7 @@ class User{
             return false;
 
         $this->id = $database->getLastInsertedId();
-        $this->sendVerificationEmail($token);
+        $this->sendVerificationEmail($token, $this);
         return true;
     }
 
@@ -131,6 +131,9 @@ class User{
         return Helpers::getRandomString();
     }
 
+    /** 
+     * Verify the user's email address using a unique token. 
+     */
     public static function verifyEmailUsingToken(string $email, string $token): bool{
         $database = Database::getInstance();
         $sql = "SELECT email, token FROM user WHERE email = ? AND email_verification_token = ?";
@@ -150,7 +153,8 @@ class User{
     }
 
     public function sendVerificationEmail(string $token){
-        Email::sendEmailVerification($token);
+        $emailVerificationLink = 'http://reglog.user';
+        Email::sendEmailVerification($token, $this, $emailVerificationLink);
     }
 
     public static function getUserByEmail(string $email): ?static{
@@ -172,6 +176,9 @@ class User{
         return User::convertDBToUserObj($res[0]);
     }
 
+    /**
+     * Convert the user array from a database query to a User instance.
+     */
     protected static function convertDBToUserObj(array $dbUser): User{
         return new User(
             id: (int) $dbUser['id'],
@@ -183,6 +190,12 @@ class User{
         );
     }
 
+    /**
+     * Get the email verification token for a given user.
+     * 
+     * @param User $user User to get verification email from.
+     * @return string The verification token.
+     */
     public static function getVerificationToken(User $user): string{
         $database = Database::getInstance();
         $sql = "SELECT email_verification_token FROM user WHERE id = ?";
