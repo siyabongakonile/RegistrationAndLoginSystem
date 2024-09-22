@@ -18,10 +18,24 @@ function logMessage(string $type, string $message, ?string $file = null, ?int $l
     $extraData = $file !== null? "File: " . $file . ';': '';
     $extraData .= $line !== null? "Line: " . $line . ';': '';
     $extraData = trim($extraData, ';');
+    // Date and time for each log entry
+    $dateTime = date('Y-m-d H:i:s');
 
-    $message = $type . " -- " . $message . ($extraData != ''? " -- ($extraData)": '') . "\r\n";
-    $logHandle = fopen($logFile, 'a');
+    $message = "[" . $dateTime . "] " . $type . " -- " . $message . ($extraData != ''? " -- ($extraData)": '') . PHP_EOL;
+    $logHandle = false;
+    if(!($logHandle = fopen($logFile, 'a'))){
+        error_log("Failed to open log file: " . $logFile);
+        fclose($logHandle);
+        return;
+    }
+
+    if(!flock($logHandle, LOCK_EX)){
+        error_log("Failed to lock log file: " . $logFile);
+        return;
+    }
+
     fwrite($logHandle, $message);
+    flock($logHandle, LOCK_UN);
     fclose($logHandle);
 }
 
