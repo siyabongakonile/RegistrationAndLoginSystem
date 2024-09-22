@@ -14,4 +14,16 @@ class Helpers{
         $str = htmlentities($str);
         return $str;
     }
+
+    public static function validateEmail(string $email): string|false{
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+
+    public static function isValidPassword(string $password): bool{
+        $passlen = strlen($password);
+        if($passlen > 4 && $passlen < 20){
+            return true;
+        }
+        return false;
+    }
 }
