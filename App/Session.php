@@ -43,4 +43,17 @@ class Session{
         session_unset();
         session_destroy();
     }
+
+    public function setMessage(string $message){
+        $_SESSION['message'] = $message;
+    }
+
+    public function getMessage(): string|null{
+        if(!isset($_SESSION['message'])) return null;
+        return $_SESSION['message'];
+    }
+
+    public function removeMessage(){
+        unset($_SESSION['message']);
+    }
 }
