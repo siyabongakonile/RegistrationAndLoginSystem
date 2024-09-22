@@ -1,2 +1,3 @@
-error.log
-main.log
+/inc/config.php
+/error.log
+/main.log
