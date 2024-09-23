@@ -22,17 +22,17 @@
                 <form action="/user/edit" method="post">
                     <div class="form-row">
                         <label for="fname">
-                            Firstname: <input type="text" name="fname" id="fname">
+                            Firstname: <input type="text" name="fname" id="fname" value="<?= @$user->getFirstname() ?>">
                         </label>
                     </div>
                     <div class="form-row">
                         <label for="lname">
-                            Lastname: <input type="text" name="lname" id="lname">
+                            Lastname: <input type="text" name="lname" id="lname" value="<?= @$user->getLastname() ?>">
                         </label>
                     </div>
                     <div class="form-row">
                         <label for="email">
-                            Email: <input type="text" name="email" id="email">
+                            Email: <input type="text" name="email" id="email" value="<?= @$user->getEmail() ?>">
                         </label>
                     </div>
                     <div class="form-row">
