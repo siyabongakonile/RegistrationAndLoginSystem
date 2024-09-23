@@ -83,33 +83,36 @@ class User{
         $this->isEmailVerified = $isEmailVerified;
     }
 
-    public function save(): bool{
+    public function save(string $emailVerificationToken): bool{
         if($this->id !== null)
-            return $this->updateUser();
+            return $this->updateUser($emailVerificationToken);
         else
-            return $this->createUser();
+            return $this->createUser($emailVerificationToken);
     }
 
-    protected function updateUser(): bool{
-        $sql = "UPDATE user SET fname = ?, lname = ?, email = ?, password = ? WHERE id = ?";
+    protected function updateUser(string $emailVerificationToken): bool{
+        $sql = "UPDATE user SET fname = ?, lname = ?, email = ?, email_verification_token = ?, email_verified = ?, password = ? WHERE id = ?";
         $params = [
             $this->firstname,
             $this->lastname,
             $this->email,
+            $emailVerificationToken,
+            $this->isEmailVerified,
             $this->password,
             $this->id
         ];
+
+        // $this->sendVerificationEmail($token);
         return Database::getInstance()->execute($sql, $params);
     }
 
-    protected function createUser(): bool{
-        $token = $this->generateEmailVerificationToken();
+    protected function createUser(string $emailVerificationToken): bool{
         $sql = "INSERT INTO user (fname, lname, email, email_verification_token, password) VALUES (?, ?, ?, ?, ?)";
         $params = [
             $this->firstname, 
             $this->lastname,
             $this->email,
-            $token,
+            $emailVerificationToken,
             $this->password
         ];
         $database = Database::getInstance();
@@ -118,7 +121,7 @@ class User{
             return false;
 
         $this->id = $database->getLastInsertedId();
-        $this->sendVerificationEmail($token, $this);
+        // $this->sendVerificationEmail($token, $this);
         return true;
     }
 
@@ -127,7 +130,7 @@ class User{
         return Database::getInstance()->execute($sql, [':id' =>$this->id]);
     }
 
-    protected function generateEmailVerificationToken(): string{
+    public static function generateEmailVerificationToken(): string{
         return Helpers::getRandomString();
     }
 
@@ -136,7 +139,7 @@ class User{
      */
     public static function verifyEmailUsingToken(string $email, string $token): bool{
         $database = Database::getInstance();
-        $sql = "SELECT email, token FROM user WHERE email = ? AND email_verification_token = ?";
+        $sql = "SELECT email FROM user WHERE email = ? AND email_verification_token = ?";
         $params = [
             $email,
             $token
@@ -146,15 +149,22 @@ class User{
         if(count($res) < 1)
             return false;
 
-        $sql = "UPDATE user SET email_verified = ?";
-        if(!$database->execute($sql, [true]))
+        $sql = "UPDATE user SET email_verified = ? WHERE email = ?";
+        if(!$database->execute($sql, [true, $email]))
             return false;
         return true;
     }
 
+    public function sendRegistrationEmail(){
+        Email::sendRegistrationEmail($this);
+    }
+
     public function sendVerificationEmail(string $token){
-        $emailVerificationLink = 'http://reglog.user';
-        Email::sendEmailVerification($token, $this, $emailVerificationLink);
+        Email::sendEmailVerification($this, $token, EMAIL_VERIFICATION_DOMAIN);
+    }
+
+    public function sendUserDeletionEmail(){
+        Email::sendUserDeletionEmail($this);
     }
 
     public static function getUserByEmail(string $email): ?static{
