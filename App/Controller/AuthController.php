@@ -25,16 +25,20 @@ class AuthController extends BaseController{
         if($fname == '' || $lname == '' || $email == '' || $password == '')
             $errors[] = "All fields are required.";
 
-        if(!filter_var($email, FILTER_VALIDATE_EMAIL) && empty($errors))
+        if(!Helpers::validateEmail($email) && empty($errors))
             $errors[] = "Enter a valid Email Address.";
 
         if(empty($errors)){
             $hashedPassword = Criptography::encryptPassword($password);
             $user = new User(null, $fname, $lname, $email, $hashedPassword);
-            if($user->save())
+            $emailVerificationToken = User::generateEmailVerificationToken();
+            if($user->save($emailVerificationToken)){
+                $user->sendRegistrationEmail();
+                $user->sendVerificationEmail($emailVerificationToken);
                 $this->loginUser($user);
-            else
+            } else {
                 $errors[] = "Error occured while creating user. Please try again later.";
+            }  
         }
 
         View::render('auth/register', [
