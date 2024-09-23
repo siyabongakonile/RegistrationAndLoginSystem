@@ -8,6 +8,7 @@
 <body>
     <div class="login-cont">
         <div class="login-inner">
+            <?php include_once __DIR__ . "/../patials/message.php" ?>
             <?php if(isset($errors) && count($errors) > 0): ?>
             <div class="errors-cont">
                 <ul>
