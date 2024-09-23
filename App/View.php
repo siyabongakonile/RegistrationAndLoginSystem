@@ -11,7 +11,9 @@ class View{
         $pathToView = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $view . static::$viewExt;
         if(!file_exists($pathToView))
             throw new \Exception("View {$view} not found.");
-
+        $session = Session::getInstance();
+        $message = $session->getMessage();
+        $session->removeMessage();
         extract($args); 
         include $pathToView;
     }
