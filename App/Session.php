@@ -28,6 +28,14 @@ class Session{
         return $_SESSION[$key];
     }
 
+    /**
+     * Check if user is logged in or not.
+     * 
+     * Uses the session variable to check if a user id and 
+     * is logged in are set and is logged in value is true.
+     * 
+     * @return bool true if the user is logged in or false otherwise.
+     */
     public function isLoggedIn(): bool{
         if((isset($_SESSION['user-id']) && isset($_SESSION['is-logged-in'])) && $_SESSION['is-logged-in'] === true)
             return true;
