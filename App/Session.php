@@ -52,10 +52,26 @@ class Session{
         session_destroy();
     }
 
+    /**
+     * Set the message to be passed to another page.
+     * 
+     * This session variable is used to pass a message when a page
+     * is going to redireect to another page and wants to display 
+     * a message on that page.
+     * 
+     * @param string $message Message to pass.
+     */
     public function setMessage(string $message){
         $_SESSION['message'] = $message;
     }
 
+    /**
+     * Get the passed message.
+     * 
+     * Get the message that was passed by another page
+     * 
+     * @return string|null Message passed or null if non was set.
+     */
     public function getMessage(): string|null{
         if(!isset($_SESSION['message'])) return null;
         return $_SESSION['message'];
